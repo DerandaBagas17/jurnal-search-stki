@@ -1,35 +1,37 @@
-# 🔍 JurnalSearch STKI - Sistem Temu Kembali Dokumen PDF Kriptografi (RSA & AES)
+# 🔍 JurnalSearch STKI - Sistem Temu Kembali Informasi Dokumen Jurnal Ilmiah (Okapi BM25 & Inverted Index)
 
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/IR%20Model-Okapi%20BM25-green.svg)]()
 [![GUI](https://img.shields.io/badge/GUI-CustomTkinter-orange.svg)]()
 [![PDF Engine](https://img.shields.io/badge/PDF-PyMuPDF-red.svg)]()
-[![Corpus](https://img.shields.io/badge/Korpus-22%20File%20PDF-purple.svg)]()
+[![Corpus](https://img.shields.io/badge/Korpus-Dokumen%20Jurnal%20PDF-purple.svg)]()
 
-Aplikasi Desktop GUI modern untuk **Sistem Temu Kembali Informasi (STKI / Information Retrieval)** yang melakukan pencarian dan perankingan pada koleksi **22 dokumen PDF jurnal ilmiah asli** bertema kriptografi (*RSA, AES, Steganografi LSB, Keamanan Siber BSSN/CSIRT*) menggunakan algoritma **Okapi BM25** dan struktur data **Inverted Index**.
+Aplikasi Desktop GUI modern untuk **Sistem Temu Kembali Informasi (STKI / Information Retrieval)** yang melakukan pencarian, ekstraksi teks otomatis, dan pemeringkatan relevansi pada repositori **dokumen PDF artikel jurnal ilmiah** menggunakan algoritma probabilistik **Okapi BM25** dan struktur data **Inverted Index**. 
+
+Sistem didesain modular dan fleksibel sehingga dapat digunakan untuk mencari berbagai jenis koleksi dokumen jurnal ilmiah (multi-topik / umum) secara cepat dan akurat, lengkap dengan pembuka dokumen fisik PDF asli.
 
 ---
 
 ## 🌟 Fitur Utama Sistem
 
-1. **Full-Text PDF Extraction (PyMuPDF)**:
-   * Membaca dan mengekstrak teks langsung dari 22 file PDF di folder `analisis rsa aes/`.
-   * Mengambil judul paper, jumlah halaman, ukuran file, dan teks dokumen lengkap ke dalam `journals.json`.
-2. **Text Preprocessing Lengkap**:
-   * *Case Folding* (mengubah teks ke huruf kecil).
-   * *Tokenizing & Cleaning* (pembersihan tanda baca, angka, dan karakter non-alfabet).
-   * *Stopword Removal* (membuang kata tugas umum bahasa Indonesia).
-   * *Stemming* (algoritma reduksi kata berimbuhan bahasa Indonesia).
+1. **Full-Text PDF Extraction (PyMuPDF / fitz)**:
+   * Membaca dan mengekstrak teks serta metadata langsung dari berkas fisik PDF di folder korpus.
+   * Menyimpan judul paper, jumlah halaman, ukuran berkas, dan isi teks lengkap ke dalam korpus terstruktur `journals.json`.
+2. **Text Preprocessing Pipeline Lengkap**:
+   * *Case Folding* (standarisasi teks menjadi huruf kecil).
+   * *Tokenizing & Cleaning* (pembersihan tanda baca khusus, angka, dan karakter non-alfabet).
+   * *Stopword Removal* (penghapusan kata-kata umum yang tidak bermakna informasi).
+   * *Stemming* (reduksi kata berimbuhan ke bentuk kata dasar).
 3. **Penyusunan Inverted Index**:
    * Memetakan setiap kata kunci unik (*term*) ke daftar kemunculan dokumen (*posting list*): `Term -> [{DocID, TF}]`.
    * Menghitung panjang dokumen ($|D|$) dan rata-rata panjang korpus ($\text{avgdl}$).
 4. **Algoritma Pemeringkatan Okapi BM25 Berjenjang (*Field Weighting*)**:
-   * Kata kunci yang cocok pada **Judul Paper** diberi bobot 4x lebih tinggi.
-   * Kata kunci yang cocok pada **Abstrak** diberi bobot 2x lebih tinggi.
-   * Kata kunci pada **Isi Dokumen** diberi bobot 1x.
-   * Parameter: $k_1 = 1.5$ (saturasi frekuensi) dan $b = 0.75$ (penalti panjang dokumen).
+   * Kata kunci yang cocok pada **Judul Paper** diberi prioritas bobot lebih tinggi (4x).
+   * Kata kunci yang cocok pada **Abstrak** diberi bobot 2x.
+   * Kata kunci pada **Isi Dokumen** diberi bobot standar (1x).
+   * Parameter standar: $k_1 = 1.5$ (faktor saturasi frekuensi term) dan $b = 0.75$ (faktor penalti panjang dokumen).
 5. **Solusi Perbedaan Kosakata (*Query Expansion*)**:
-   * Mengatasi *vocabulary mismatch* dengan tesaurus istilah kriptografi (*AES, RSA, Steganografi, Citra, Keamanan*).
+   * Mengatasi permasalahan *vocabulary mismatch* dengan mekanisme tesaurus istilah terkait untuk memperkaya kata kunci kueri pencarian pengguna.
 6. **Mode Mesin Pencari Konjungtif (*Strict AND Match*)**:
    * Menerapkan aturan konjungtif layaknya Google Scholar agar dokumen yang ditampilkan wajib mencakup seluruh konsep kata kunci query pengguna.
 7. **Integrasi File Fisik & Windows Desktop**:
@@ -42,17 +44,17 @@ Aplikasi Desktop GUI modern untuk **Sistem Temu Kembali Informasi (STKI / Inform
 
 ```text
 jurnal-search-stki/
-├── analisis rsa aes/          # Koleksi 22 file PDF jurnal ilmiah asli
+├── analisis rsa aes/          # Koleksi dokumen PDF jurnal ilmiah asli
 │   ├── 1.pdf
 │   ├── 2.pdf
-│   └── ... (hingga 22.pdf)
+│   └── ...
 ├── dist/                      # File aplikasi executable siap pakai
 │   └── JurnalSearch_PDF.exe   # Aplikasi Windows (.EXE) mandiri (~32 MB)
 ├── app.py                     # Antarmuka Desktop GUI (CustomTkinter)
 ├── ir_engine.py               # Engine STKI (Inverted Index, BM25, Preprocessing)
-├── extract_pdf_corpus.py      # Ekstraktor teks PDF ke korpus JSON
-├── journals.json              # Korpus metadata & teks hasil ekstraksi 22 PDF
-├── requirements.txt           # Daftar pustaka Python yang dibutuhkan
+├── extract_pdf_corpus.py      # Ekstraktor teks dokumen PDF ke korpus JSON
+├── journals.json              # Korpus metadata & teks hasil ekstraksi PDF
+├── requirements.txt           # Daftar dependensi pustaka Python
 ├── build_exe.bat              # Skrip kompilasi otomatis ke file .EXE
 └── README.md                  # Dokumentasi teknis proyek
 ```
@@ -62,7 +64,7 @@ jurnal-search-stki/
 ## 🚀 Cara Menjalankan Aplikasi
 
 ### Opsi 1: Menjalankan File Executable (.EXE) Siap Pakai (Rekomendasi)
-Anda dapat langsung menjalankan aplikasi tanpa perlu instalasi lingkungan Python:
+Anda dapat langsung menjalankan aplikasi tanpa perlu konfigurasi lingkungan Python:
 1. Masuk ke folder `dist/`.
 2. Klik ganda file: **`JurnalSearch_PDF.exe`**.
 
@@ -77,7 +79,6 @@ Anda dapat langsung menjalankan aplikasi tanpa perlu instalasi lingkungan Python
    ```bash
    pip install -r requirements.txt
    ```
-   *(atau `pip install customtkinter pymupdf`)*
 4. Jalankan aplikasi:
    ```bash
    python app.py
@@ -95,7 +96,7 @@ Di mana nilai **Inverse Document Frequency (IDF)** dihitung dengan formula non-n
 
 $$\text{IDF}(q) = \ln\left(1 + \frac{N - \text{df}(q) + 0.5}{\text{df}(q) + 0.5}\right)$$
 
-* $N$ = Total dokumen dalam korpus (22 dokumen).
+* $N$ = Total dokumen dalam korpus.
 * $\text{df}(q)$ = Jumlah dokumen yang memuat kata kunci $q$.
 * $\text{TF}(q, D)$ = Frekuensi kemunculan kata $q$ di dalam dokumen $D$ (dengan field weighting).
 * $|D|$ = Jumlah total token kata dalam dokumen $D$.
@@ -103,24 +104,26 @@ $$\text{IDF}(q) = \ln\left(1 + \frac{N - \text{df}(q) + 0.5}{\text{df}(q) + 0.5}
 
 ---
 
-## 🛠️ Kompilasi Ulang ke File .EXE
+## 🛠️ Menambahkan Dokumen PDF Baru & Kompilasi Ulang
 
-Jika terdapat pembaruan file PDF atau kode engine:
-1. Ekstrak ulang data teks:
+Jika Anda ingin mengganti atau menambahkan dokumen PDF jurnal ilmiah baru:
+1. Masukkan file PDF baru ke dalam folder dokumen.
+2. Jalankan ekstraktor teks otomatis:
    ```bash
    python extract_pdf_corpus.py
    ```
-2. Kompilasi ulang ke file `.exe`:
-   * Klik ganda file **`build_exe.bat`**, atau
-   * Jalankan perintah PyInstaller:
+3. Jalankan kembali `python app.py` atau kompilasi ulang file executable dengan:
+   * Menjalankan **`build_exe.bat`**, atau
+   * Menjalankan perintah PyInstaller:
      ```bash
      python -m PyInstaller --noconsole --onefile --name "JurnalSearch_PDF" --add-data "journals.json;." --collect-all customtkinter app.py
      ```
 
 ---
 
-## 👤 Penulis
-* **Nama:** Deranda Bagas Pamungkas
-* **Repositori:** [github.com/DerandaBagas17/jurnal-search-stki](https://github.com/DerandaBagas17/jurnal-search-stki)
+## 👤 Informasi Mahasiswa
+* **Nama Lengkap:** Deranda Bagas Pamungkas
+* **NIM:** A11.2023.14906
 * **Mata Kuliah:** Sistem Temu Kembali Informasi (STKI)
 * **Program Studi:** Teknik Informatika
+* **Repositori GitHub:** [https://github.com/DerandaBagas17/jurnal-search-stki](https://github.com/DerandaBagas17/jurnal-search-stki)
